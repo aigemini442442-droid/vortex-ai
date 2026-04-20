@@ -3,29 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Vortex AI</title>
+  <title>Vortex Multi AI</title>
 </head>
 <body>
-  <h1>Vortex AI</h1>
+  <h1>Vortex Multi AI</h1>
   <input id="input" placeholder="Masukkan topik..." />
   <button onclick="run()">Generate</button>
   <pre id="out"></pre>
 
   <script>
-    const API_URL = "https://vortex-ai-production-47b3.up.railway.app";
+    const API_URL = "https://vortex-ai-ahpp.vercel.app/";
 
     async function run() {
       const input = document.getElementById("input").value;
       const out = document.getElementById("out");
-
       out.innerText = "Loading...";
 
       try {
         const res = await fetch(`${API_URL}/api/ai/generate`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             input,
             platform: "TikTok",
@@ -35,7 +32,6 @@
 
         const data = await res.json();
         out.innerText = JSON.stringify(data, null, 2);
-
       } catch (err) {
         out.innerText = "Error: " + err.message;
       }

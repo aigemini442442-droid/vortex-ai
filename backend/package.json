@@ -1,12 +1,13 @@
 {
-  "name": "vortex-backend",
+  "name": "vortex-multi-ai-backend",
   "version": "1.0.0",
-  "description": "Vortex AI backend for Railway",
+  "description": "Multi AI backend with Gemini, Groq, OpenAI fallback",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.18.2",
