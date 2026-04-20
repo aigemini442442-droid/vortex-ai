@@ -1,7 +1,7 @@
 {
   "name": "vortex-multi-ai-backend",
   "version": "1.0.0",
-  "description": "Multi AI backend with Gemini, Groq, OpenAI fallback",
+  "description": "Final multi AI backend with Gemini + Groq + OpenAI fallback",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"

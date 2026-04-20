@@ -1,15 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Vortex Multi AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vortex Multi AI Final</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 700px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    h1 {
+      text-align: center;
+      color: #38bdf8;
+    }
+    input, button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    input {
+      background: #334155;
+      color: white;
+    }
+    button {
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .hook {
+      margin-top: 15px;
+      background: #334155;
+      padding: 15px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Vortex Multi AI</h1>
-  <input id="input" placeholder="Masukkan topik..." />
-  <button onclick="run()">Generate</button>
-  <pre id="out"></pre>
+  <div class="card">
+    <h1>Vortex Multi AI Final</h1>
+    <input id="input" placeholder="Masukkan topik..." />
+    <button onclick="run()">Generate Hook</button>
+    <div id="out"></div>
+  </div>
 
   <script>
     const API_URL = "https://vortex-ai-production-47b3.up.railway.app";
@@ -17,7 +67,7 @@
     async function run() {
       const input = document.getElementById("input").value;
       const out = document.getElementById("out");
-      out.innerText = "Loading...";
+      out.innerHTML = "Loading...";
 
       try {
         const res = await fetch(`${API_URL}/api/ai/generate`, {
@@ -31,9 +81,18 @@
         });
 
         const data = await res.json();
-        out.innerText = JSON.stringify(data, null, 2);
+
+        if (!data.success) {
+          out.innerHTML = "Error: " + data.error;
+          return;
+        }
+
+        out.innerHTML = data.data.map(item => `
+          <div class="hook">${item.hook}</div>
+        `).join("");
+
       } catch (err) {
-        out.innerText = "Error: " + err.message;
+        out.innerHTML = "Error: " + err.message;
       }
     }
   </script>

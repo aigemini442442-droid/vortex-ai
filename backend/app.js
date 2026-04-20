@@ -29,7 +29,11 @@ const openai = process.env.OPENAI_API_KEY
 async function generateHooks(prompt) {
   if (gemini) {
     try {
-      const model = gemini.getGenerativeModel({ model: "gemini-1.5-flash" });
+      console.log("Using Gemini...");
+      const model = gemini.getGenerativeModel({
+        model: "gemini-2.0-flash",
+      });
+
       const result = await model.generateContent(prompt);
       let text = result.response.text();
       text = text.replace(/```json|```/g, "").trim();
@@ -41,10 +45,12 @@ async function generateHooks(prompt) {
 
   if (groq) {
     try {
+      console.log("Using Groq...");
       const completion = await groq.chat.completions.create({
-        model: "llama3-8b-8192",
+        model: "llama-3.1-8b-instant",
         messages: [{ role: "user", content: prompt }],
       });
+
       let text = completion.choices[0].message.content.trim();
       text = text.replace(/```json|```/g, "").trim();
       return JSON.parse(text);
@@ -55,10 +61,12 @@ async function generateHooks(prompt) {
 
   if (openai) {
     try {
+      console.log("Using OpenAI...");
       const completion = await openai.chat.completions.create({
         model: "gpt-4.1-mini",
         messages: [{ role: "user", content: prompt }],
       });
+
       let text = completion.choices[0].message.content.trim();
       text = text.replace(/```json|```/g, "").trim();
       return JSON.parse(text);
@@ -75,7 +83,7 @@ async function generateHooks(prompt) {
 }
 
 app.get("/", (req, res) => {
-  res.send("MULTI AI BACKEND RUNNING 🚀");
+  res.send("MULTI AI FINAL BACKEND RUNNING 🚀");
 });
 
 app.get("/api/test", (req, res) => {
@@ -92,8 +100,10 @@ Topik: ${input}
 Platform: ${platform}
 Tujuan: ${goal}
 
-Balas HANYA dalam format JSON array:
+Balas HANYA JSON valid tanpa markdown:
 [
+  { "hook": "..." },
+  { "hook": "..." },
   { "hook": "..." }
 ]
 `;
@@ -113,5 +123,5 @@ Balas HANYA dalam format JSON array:
 });
 
 app.listen(process.env.PORT || 3001, () => {
-  console.log("MULTI AI BACKEND RUNNING 🚀");
+  console.log("MULTI AI FINAL BACKEND RUNNING 🚀");
 });
