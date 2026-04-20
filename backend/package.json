@@ -1,11 +1,8 @@
 {
-  "name": "vortex-multi-ai-backend",
+  "name": "vortex-ai-orchestra",
   "version": "1.0.0",
-  "description": "Final multi AI backend with Gemini + Groq + OpenAI fallback",
   "main": "app.js",
-  "scripts": {
-    "start": "node app.js"
-  },
+  "scripts": { "start": "node app.js" },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
     "cors": "^2.8.5",

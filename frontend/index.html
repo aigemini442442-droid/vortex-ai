@@ -1,100 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vortex Multi AI Final</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-    .card {
-      background: #1e293b;
-      padding: 30px;
-      border-radius: 20px;
-      width: 90%;
-      max-width: 700px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    }
-    h1 {
-      text-align: center;
-      color: #38bdf8;
-    }
-    input, button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 15px;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-    }
-    input {
-      background: #334155;
-      color: white;
-    }
-    button {
-      background: #38bdf8;
-      color: #0f172a;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .hook {
-      margin-top: 15px;
-      background: #334155;
-      padding: 15px;
-      border-radius: 10px;
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Vortex AI Orchestra</title>
+<style>
+body{font-family:Arial;background:#0f172a;color:#fff;padding:30px}
+.card{max-width:900px;margin:auto;background:#1e293b;padding:25px;border-radius:18px}
+input,button{width:100%;padding:14px;margin-top:10px;border-radius:10px;border:none}
+button{background:#38bdf8;font-weight:bold}
+.box{margin-top:18px;background:#334155;padding:15px;border-radius:12px}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>Vortex Multi AI Final</h1>
-    <input id="input" placeholder="Masukkan topik..." />
-    <button onclick="run()">Generate Hook</button>
-    <div id="out"></div>
-  </div>
-
-  <script>
-    const API_URL = "https://vortex-ai-production-47b3.up.railway.app";
-
-    async function run() {
-      const input = document.getElementById("input").value;
-      const out = document.getElementById("out");
-      out.innerHTML = "Loading...";
-
-      try {
-        const res = await fetch(`${API_URL}/api/ai/generate`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            input,
-            platform: "TikTok",
-            goal: "Viral"
-          })
-        });
-
-        const data = await res.json();
-
-        if (!data.success) {
-          out.innerHTML = "Error: " + data.error;
-          return;
-        }
-
-        out.innerHTML = data.data.map(item => `
-          <div class="hook">${item.hook}</div>
-        `).join("");
-
-      } catch (err) {
-        out.innerHTML = "Error: " + err.message;
-      }
-    }
-  </script>
+<div class="card">
+<h1>Vortex AI Orchestra</h1>
+<input id="topic" placeholder="Masukkan topik..." />
+<button onclick="run()">Generate Full Content</button>
+<div id="out"></div>
+</div>
+<script>
+const API_URL = "https://vortex-ai-production.up.railway.app";
+async function run(){
+ const topic=document.getElementById("topic").value;
+ const out=document.getElementById("out");
+ out.innerHTML="Generating...";
+ const res=await fetch(`${API_URL}/api/orchestra/generate`,{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({input:topic})
+ });
+ const data=await res.json();
+ if(!data.success){ out.innerHTML=data.error; return; }
+ const d=data.data;
+ out.innerHTML = `
+   <div class="box"><h3>Hooks</h3>${d.hooks.map(h=>`<p>${h.hook}</p>`).join("")}</div>
+   <div class="box"><h3>Image Prompt</h3><p>${d.image_prompt}</p></div>
+   <div class="box"><h3>Video Script</h3>${d.video_script.map(s=>`<p>${s}</p>`).join("")}</div>
+ `;
+}
+</script>
 </body>
 </html>

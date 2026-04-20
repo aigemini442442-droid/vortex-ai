@@ -8,120 +8,70 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Providers
-const gemini = process.env.GEMINI_API_KEY
-  ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-  : null;
+const gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const groq = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: "https://api.groq.com/openai/v1",
+});
 
-const groq = process.env.GROQ_API_KEY
-  ? new OpenAI({
-      apiKey: process.env.GROQ_API_KEY,
-      baseURL: "https://api.groq.com/openai/v1",
-    })
-  : null;
-
-const openai = process.env.OPENAI_API_KEY
-  ? new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    })
-  : null;
-
-async function generateHooks(prompt) {
-  if (gemini) {
-    try {
-      console.log("Using Gemini...");
-      const model = gemini.getGenerativeModel({
-        model: "gemini-2.0-flash",
-      });
-
-      const result = await model.generateContent(prompt);
-      let text = result.response.text();
-      text = text.replace(/```json|```/g, "").trim();
-      return JSON.parse(text);
-    } catch (err) {
-      console.log("Gemini failed:", err.message);
-    }
-  }
-
-  if (groq) {
-    try {
-      console.log("Using Groq...");
-      const completion = await groq.chat.completions.create({
-        model: "llama-3.1-8b-instant",
-        messages: [{ role: "user", content: prompt }],
-      });
-
-      let text = completion.choices[0].message.content.trim();
-      text = text.replace(/```json|```/g, "").trim();
-      return JSON.parse(text);
-    } catch (err) {
-      console.log("Groq failed:", err.message);
-    }
-  }
-
-  if (openai) {
-    try {
-      console.log("Using OpenAI...");
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4.1-mini",
-        messages: [{ role: "user", content: prompt }],
-      });
-
-      let text = completion.choices[0].message.content.trim();
-      text = text.replace(/```json|```/g, "").trim();
-      return JSON.parse(text);
-    } catch (err) {
-      console.log("OpenAI failed:", err.message);
-    }
-  }
-
-  return [
-    { hook: "Hook viral fallback 1 untuk testing" },
-    { hook: "Hook viral fallback 2 untuk testing" },
-    { hook: "Hook viral fallback 3 untuk testing" }
-  ];
+async function agentHook(input, platform, goal) {
+  const model = gemini.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const prompt = `
+Kamu AI Hook Specialist.
+Buat 3 hook viral untuk topik "${input}" untuk platform ${platform} dengan tujuan ${goal}.
+Balas JSON:
+[
+ {"hook":"..."},
+ {"hook":"..."},
+ {"hook":"..."}
+]`;
+  const result = await model.generateContent(prompt);
+  return JSON.parse(result.response.text().replace(/```json|```/g, "").trim());
 }
 
-app.get("/", (req, res) => {
-  res.send("MULTI AI FINAL BACKEND RUNNING 🚀");
-});
+async function agentImage(input, hooks) {
+  const completion = await groq.chat.completions.create({
+    model: "llama-3.1-8b-instant",
+    messages: [{
+      role: "user",
+      content: `Buat prompt gambar sinematik untuk topik "${input}" berdasarkan hook ini: ${hooks.map(h=>h.hook).join(", ")}. Balas JSON {"image_prompt":"..."}`,
+    }],
+  });
+  return JSON.parse(completion.choices[0].message.content.replace(/```json|```/g, "").trim());
+}
 
-app.get("/api/test", (req, res) => {
-  res.json({ ok: true });
-});
+async function agentVideo(input, hooks) {
+  const completion = await groq.chat.completions.create({
+    model: "llama-3.1-8b-instant",
+    messages: [{
+      role: "user",
+      content: `Buat storyboard video pendek 3 scene untuk topik "${input}" berdasarkan hook ini: ${hooks.map(h=>h.hook).join(", ")}. Balas JSON {"video_script":["scene 1","scene 2","scene 3"]}`,
+    }],
+  });
+  return JSON.parse(completion.choices[0].message.content.replace(/```json|```/g, "").trim());
+}
 
-app.post("/api/ai/generate", async (req, res) => {
+app.post("/api/orchestra/generate", async (req, res) => {
   try {
-    const { input, platform, goal } = req.body;
+    const { input, platform = "TikTok", goal = "Viral" } = req.body;
 
-    const prompt = `
-Buat 3 hook viral untuk konten berikut:
-Topik: ${input}
-Platform: ${platform}
-Tujuan: ${goal}
-
-Balas HANYA JSON valid tanpa markdown:
-[
-  { "hook": "..." },
-  { "hook": "..." },
-  { "hook": "..." }
-]
-`;
-
-    const data = await generateHooks(prompt);
+    const hooks = await agentHook(input, platform, goal);
+    const image = await agentImage(input, hooks);
+    const video = await agentVideo(input, hooks);
 
     res.json({
       success: true,
-      data,
+      data: {
+        hooks,
+        image_prompt: image.image_prompt,
+        video_script: video.video_script
+      }
     });
   } catch (e) {
-    res.status(500).json({
-      success: false,
-      error: e.message,
-    });
+    res.status(500).json({ success: false, error: e.message });
   }
 });
 
-app.listen(process.env.PORT || 3001, () => {
-  console.log("MULTI AI FINAL BACKEND RUNNING 🚀");
-});
+app.get("/", (req,res)=>res.send("AI Orchestra Running 🚀"));
+
+app.listen(process.env.PORT || 3001, ()=> console.log("AI Orchestra Running 🚀"));
