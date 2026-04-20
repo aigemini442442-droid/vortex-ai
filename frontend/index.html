@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html>
+<head><title>Vortex AI</title></head>
+<body>
+<h1>Vortex AI</h1>
+<input id="input" placeholder="input"/>
+<button onclick="run()">Generate</button>
+<pre id="out"></pre>
+
+<script>
+async function run(){
+ const res = await fetch("/api/ai/generate",{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({input:document.getElementById("input").value, platform:"TikTok", goal:"Viral"})
+ });
+ const data = await res.json();
+ document.getElementById("out").innerText = JSON.stringify(data,null,2);
+}
+</script>
+</body>
+</html>
