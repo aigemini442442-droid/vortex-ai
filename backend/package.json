@@ -1,13 +1,15 @@
-
 {
-  "name": "backend",
+  "name": "vortex-backend",
   "version": "1.0.0",
-  "main": "src/app.js",
-  "scripts": { "start": "node src/app.js" },
+  "description": "Vortex AI backend for Railway",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
   "dependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
+    "express": "^4.18.2",
     "openai": "^4.0.0"
   }
 }

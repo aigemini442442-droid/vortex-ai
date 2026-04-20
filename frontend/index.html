@@ -1,23 +1,39 @@
-
 <!DOCTYPE html>
-<html>
-<head><title>Vortex AI</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Vortex AI</title>
+</head>
 <body>
-<h1>Vortex AI</h1>
-<input id="input" placeholder="input"/>
-<button onclick="run()">Generate</button>
-<pre id="out"></pre>
+  <h1>Vortex AI</h1>
 
-<script>
-async function run(){
- const res = await fetch("/api/ai/generate",{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({input:document.getElementById("input").value, platform:"TikTok", goal:"Viral"})
- });
- const data = await res.json();
- document.getElementById("out").innerText = JSON.stringify(data,null,2);
-}
-</script>
+  <input id="input" placeholder="Masukkan topik..." />
+  <button onclick="run()">Generate</button>
+
+  <pre id="out"></pre>
+
+  <script>
+    const API_URL = "https://YOUR-BACKEND-URL.up.railway.app";
+
+    async function run() {
+      const input = document.getElementById("input").value;
+
+      const res = await fetch(`${API_URL}/api/ai/generate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          input,
+          platform: "TikTok",
+          goal: "Viral"
+        })
+      });
+
+      const data = await res.json();
+      document.getElementById("out").innerText = JSON.stringify(data, null, 2);
+    }
+  </script>
 </body>
 </html>
