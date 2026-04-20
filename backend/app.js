@@ -16,6 +16,10 @@ app.get("/", (req, res) => {
   res.send("VORTEX BACKEND RUNNING 🚀");
 });
 
+app.get("/api/test", (req, res) => {
+  res.json({ ok: true });
+});
+
 app.post("/api/ai/generate", async (req, res) => {
   try {
     const { input, platform, goal } = req.body;
@@ -71,6 +75,7 @@ Balas HANYA dalam format JSON array seperti ini:
     res.json({ success: true, data });
 
   } catch (e) {
+    console.error(e);
     res.status(500).json({
       success: false,
       error: e.message

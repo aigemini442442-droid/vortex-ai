@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -7,32 +7,38 @@
 </head>
 <body>
   <h1>Vortex AI</h1>
-
   <input id="input" placeholder="Masukkan topik..." />
   <button onclick="run()">Generate</button>
-
   <pre id="out"></pre>
 
   <script>
-    const API_URL = "https://vortex-ai-production.up.railway.app";
+    const API_URL = "https://YOUR-RAILWAY-URL.up.railway.app";
 
     async function run() {
       const input = document.getElementById("input").value;
+      const out = document.getElementById("out");
 
-      const res = await fetch(`${API_URL}/api/ai/generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          input,
-          platform: "TikTok",
-          goal: "Viral"
-        })
-      });
+      out.innerText = "Loading...";
 
-      const data = await res.json();
-      document.getElementById("out").innerText = JSON.stringify(data, null, 2);
+      try {
+        const res = await fetch(`${API_URL}/api/ai/generate`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            input,
+            platform: "TikTok",
+            goal: "Viral"
+          })
+        });
+
+        const data = await res.json();
+        out.innerText = JSON.stringify(data, null, 2);
+
+      } catch (err) {
+        out.innerText = "Error: " + err.message;
+      }
     }
   </script>
 </body>
